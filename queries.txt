@@ -40,3 +40,27 @@ FROM `departments`;
 SELECT COUNT(*) AS `teachers_without_phone`
 FROM `teachers`
 WHERE `phone` IS NULL;
+
+
+
+Query con GROUP BY:
+
+1.
+SELECT COUNT(*) as `iscritti_per_anno`, YEAR(`enrolment_date`) AS `anno`
+FROM `students`
+GROUP BY YEAR(`enrolment_date`);
+
+2.
+SELECT COUNT(*) AS `uffici_nello_stesso_edificio`, `office_address`
+FROM `teachers` 
+GROUP BY `office_address`;
+
+3.
+SELECT AVG(`vote`) AS `media`, `exam_id` AS `id_appello_esame`
+FROM `exam_student`
+GROUP BY `exam_id`;
+
+4.
+SELECT COUNT(*) AS `corsi_di_laurea`, `department_id` AS `id_dipartimento` 
+FROM `degrees`
+GROUP BY `department_id`;
