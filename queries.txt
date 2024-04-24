@@ -13,7 +13,7 @@ WHERE `cfu` > 10;
 3.
 SELECT * 
 FROM `students` 
-WHERE YEAR(CURRENT_DATE()) - YEAR(`date_of_birth`) > 30;
+WHERE TIMESTAMPDIFF(YEAR,`date_of_birth`, CURDATE()) > 30;
 
 4.
 SELECT * 
@@ -64,3 +64,87 @@ GROUP BY `exam_id`;
 SELECT COUNT(*) AS `corsi_di_laurea`, `department_id` AS `id_dipartimento` 
 FROM `degrees`
 GROUP BY `department_id`;
+
+
+
+Query con JOIN:
+
+1.
+SELECT `students`.*
+FROM `degrees`
+JOIN `students` ON `degrees`.id = `students`.`degree_id`
+WHERE `degrees`.`name` = 'Corso di laurea in economia';
+
+2.
+SELECT `degrees`.*
+FROM `departments`
+JOIN `degrees` ON `departments`.`id` = `degrees`.`department_id`
+WHERE `departments`.`name` = 'Dipartimento di neuroscienze'
+AND `degrees`.`level`  = 'magistrale'
+
+3.
+SELECT *
+FROM `courses`
+JOIN `course_teacher` ON `courses`.`id` = `course_teacher`.`course_id`
+JOIN `teachers` ON `teachers`.`id` = `course_teacher`.`teacher_id`
+WHERE `teachers`.`id` = 44
+
+4.
+SELECT
+	`students`.*,
+  `degrees`.`name` AS `nome_corso_di_laurea`,
+  `degrees`.`level`,
+  `degrees`.`address`,
+  `departments`.`name`AS `nome_dipartimento`
+FROM `departments`
+JOIN `degrees` ON `departments`.`id` = `degrees`.`department_id`
+JOIN `students` ON `degrees`.id = `students`.`degree_id`
+ORDER BY `students`.`surname`, `students`.name;
+
+5.
+// Ho separato tutte le selezioni per stamparle con differenti alias //
+SELECT 
+	  `degrees`.`id` AS `id_corso_di_laurea`,
+    `degrees`.`name` AS `nome_corso_di_laurea`,
+    `degrees`.`level`,
+    `degrees`.`address`,
+    `degrees`.`email`,
+    `degrees`.`website`,
+    `courses`.`id` AS `id_corso`,
+    `courses`.`name` AS `nome_corso`,
+    `courses`.`description`,
+    `courses`.`period`,
+    `courses`.`year`,
+    `courses`.`cfu`,
+    `courses`.`website`,
+    `teachers`.`id` AS `id_insegnante`,
+    `teachers`.`name`,
+    `teachers`.`surname`,
+    `teachers`.`phone`,
+    `teachers`.`email`,
+    `teachers`.`office_address`,
+    `teachers`.`office_number`
+FROM `degrees`
+JOIN `courses` ON `degrees`.`id` = `courses`.`degree_id`
+JOIN `course_teacher` ON `courses`.`id` = `course_teacher`.`course_id`
+JOIN `teachers` ON `teachers`.`id` = `course_teacher`.`teacher_id`,
+
+6.
+SELECT `teachers`.*, `departments`.`name` AS `nome_dipartimento`
+FROM `departments`
+JOIN `degrees` ON `departments`.`id` = `degrees`.`department_id`
+JOIN `courses` ON `degrees`.`id` = `courses`.`degree_id`
+JOIN `course_teacher` ON `courses`.`id` = `course_teacher`.`course_id`
+JOIN `teachers` ON `teachers`.`id` = `course_teacher`.`teacher_id`
+WHERE `departments`.`name` = 'Dipartimento di matematica';
+
+7.
+SELECT 
+	COUNT(`exam_student`.`vote`) AS `numero_tentativi_esame`,
+	`exam_student`.`vote` AS `voto_massimo`,
+  `students`.`name`, 
+  `students`.`surname`
+FROM `students`
+JOIN `exam_student` ON `students`.`id` = `exam_student`.`student_id`
+WHERE `exam_student`.`vote` >= 18
+GROUP BY `exam_student`.`vote`, `students`.`name`, `students`.`surname`;
